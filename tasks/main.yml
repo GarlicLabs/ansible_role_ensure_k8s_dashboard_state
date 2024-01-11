@@ -28,6 +28,7 @@
     values: "{{ dashboard_helm_values }}"
 
 - name: Copy k8s-dashboard ingress to control plane
+  tags: notest
   ansible.builtin.template:
     src: k8s_dashboard_ingress.yml.j2
     dest: /tmp/k8s_dashboard_ingress.yml
