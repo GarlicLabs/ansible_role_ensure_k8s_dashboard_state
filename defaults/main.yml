@@ -1,0 +1,11 @@
+---
+
+k8s_dashboard_kubeconfig: "{{ undef(hint='Specify kubeconfig to access the k8s cluster') }}"
+#k8s_dashboard_value_path: Set path to your own helm values file
+k8s_dashboard_chart_version: 6.0.8
+k8s_dashboard_namespace: default
+
+k8s_dashboard_host_name: k8s.example.com
+k8s_dashboard_state: present
+
+k8s_dashboard_banner: This k8s is managed as code, so all changes that are done manually will be overwritten.

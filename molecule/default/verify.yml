@@ -1,0 +1,18 @@
+---
+
+- name: Verify
+  hosts: localhost
+  gather_facts: false
+  tasks:
+  - name: Assure k8s dashboard is installed
+    kubernetes.core.helm:
+      name: kubernetes-dashboard
+      chart_repo_url: "https://kubernetes.github.io/dashboard/"
+      chart_ref: kubernetes-dashboard
+      release_namespace: default
+      release_state: present
+    register: result
+  - name: Assure kubernetes-dashboard is installed
+    ansible.builtin.assert:
+      that: 
+      - result.status.status == "deployed"

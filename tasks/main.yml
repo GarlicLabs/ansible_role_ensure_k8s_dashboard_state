@@ -1,0 +1,38 @@
+---
+
+- name: Use provided helm values
+  ansible.builtin.set_fact:
+    dashboard_helm_values_template: "{{ k8s_dashboard_value_path }}"
+  when: (k8s_dashboard_value_path is defined) and (k8s_dashboard_value_path|length>0)
+
+- name: Use default helm values
+  ansible.builtin.set_fact:
+    dashboard_helm_values_template: "values.yml.j2"
+  when: (k8s_dashboard_value_path is undefined) or (k8s_dashboard_value_path|length == 0)
+
+- name: Set dashboard helm values variable content
+  ansible.builtin.set_fact:
+    dashboard_helm_values: "{{ lookup('template', dashboard_helm_values_template) | from_yaml }}"
+
+- name: Deploy kubernetes-dashboard chart
+  kubernetes.core.helm:
+    kubeconfig: "{{ k8s_dashboard_kubeconfig }}"
+    name: "kubernetes-dashboard"
+    chart_repo_url: "https://kubernetes.github.io/dashboard/"
+    chart_ref: "kubernetes-dashboard"
+    release_namespace: "{{ k8s_dashboard_namespace }}"
+    release_state: "{{ k8s_dashboard_state }}"
+    chart_version: "{{ k8s_dashboard_chart_version }}"
+    wait: true
+    timeout: 1m0s
+    values: "{{ dashboard_helm_values }}"
+
+- name: Copy k8s-dashboard ingress to control plane
+  ansible.builtin.template:
+    src: k8s_dashboard_ingress.yml.j2
+    dest: /tmp/k8s_dashboard_ingress.yml
+    mode: 0600
+
+# kubernetes.core.k8s didnt work :(
+- name: Apply k8s-dashboard ingress to the cluster.
+  ansible.builtin.command: "kubectl apply -f /tmp/k8s_dashboard_ingress.yml"
