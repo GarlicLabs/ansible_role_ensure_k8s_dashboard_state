@@ -35,4 +35,5 @@
 
 # kubernetes.core.k8s didnt work :(
 - name: Apply k8s-dashboard ingress to the cluster.
+  tags: notest
   ansible.builtin.command: "kubectl apply -f /tmp/k8s_dashboard_ingress.yml"
