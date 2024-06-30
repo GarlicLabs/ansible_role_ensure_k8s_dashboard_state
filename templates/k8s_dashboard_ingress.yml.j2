@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: k8s-dashboard-ingress
+  namespace: {{ k8s_dashboard_namespace }}
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  tls:
+  - hosts:
+    - {{ k8s_dashboard_host_name }}
+  ingressClassName: nginx
+  rules:
+  - host: {{ k8s_dashboard_host_name }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ k8s_dashboard_name }}
+            port:
+              number: 443
